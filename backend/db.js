@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
+    require('dotenv').config();
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/payment-db';
 
@@ -38,7 +38,7 @@ const connectToDatabase = async () => {
         type: String,
         required: true,
         minLength: 6
-    },  
+    },
     firstName: {
         type: String,
         required: true,
