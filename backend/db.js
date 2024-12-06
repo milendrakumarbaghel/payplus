@@ -38,7 +38,7 @@ const connectToDatabase = async () => {
         type: String,
         required: true,
         minLength: 6
-    },
+    },  
     firstName: {
         type: String,
         required: true,
