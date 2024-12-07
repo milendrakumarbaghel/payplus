@@ -109,7 +109,7 @@ router.put('/', authMiddleware, async (req, res) => {
 })
 
 //get users route
-router.get('/getUser', async (req, res) => {
+router.get('/getUsers', async (req, res) => {
     const filter = req.query.filter || "";
     const users = await User.find({
         $or: [{
