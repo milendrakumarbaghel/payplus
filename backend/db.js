@@ -45,6 +45,12 @@ const connectToDatabase = async () => {
         trim: true,
         maxLength: 50
     },
+    middleName: {
+        type: String,
+        required: false,
+        trim: true,
+        maxLength: 50
+    },
     lastName: {
         type: String,
         required: true,
