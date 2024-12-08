@@ -35,6 +35,16 @@ router.post('/signup', async (req, res)=> {
     }
 
     const user = await User.create(body);
+
+    /// ----- Create new account ------
+
+    await Account.create({
+        userId,
+        balance: 1 + Math.random() * 10000
+    })
+
+	/// -----  ------
+
     const token = jwt.sign({
         userId: user._id
     }, JWT_SECRET);
@@ -86,6 +96,7 @@ router.post('/signin', async (req, res) => {
 const updateSchema = zod.object({
     password: zod.string().optional(),
     firstName: zod.string().optional(),
+    middleName: zod.string().optional(),
     lastName: zod.string().optional(),
 })
 
