@@ -1,10 +1,10 @@
 const express = require('express');
+const router = express.Router();
 const zod = require('zod');
-const { User } = require('../db');
+const { User, Account } = require('../db');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = require('../config');
-const { Account } = require('./account');
-const router = express.Router();
+// const { User, Account } = require('./account');
 const { authMiddleware } = require('../middleware');
 
 // signup route
@@ -37,7 +37,13 @@ router.post('/signup', async (req, res) => {
             });
         }
 
-        const user = await User.create(body);
+        const user = await User.create({
+            username: body.username,
+            password: body.password,
+            firstName: body.firstName,
+            middleName: body.middleName,
+            lastName: body.lastName
+        });
         const userId = user._id;
 
         // Create new account
@@ -61,6 +67,49 @@ router.post('/signup', async (req, res) => {
         });
     }
 });
+
+// router.post("/signup", async (req, res) => {
+//     const { success } = signupSchema.safeParse(req.body)
+//     if (!success) {
+//         return res.status(411).json({
+//             message: "Email already taken / Incorrect inputs"
+//         })
+//     }
+
+//     const existingUser = await User.findOne({
+//         username: req.body.username
+//     })
+
+//     if (existingUser) {
+//         return res.status(411).json({
+//             message: "Email already taken/Incorrect inputs"
+//         })
+//     }
+
+//     const user = await User.create({
+//         username: req.body.username,
+//         password: req.body.password,
+//         firstName: req.body.firstName,
+//         middleName: req.body.middleName,
+//         lastName: req.body.lastName,
+//     })
+//     const userId = user._id;
+
+//     await Account.create({
+//         userId,
+//         balance: 1 + Math.random() * 10000
+//     })
+
+//     const token = jwt.sign({
+//         userId
+//     }, JWT_SECRET);
+
+//     res.json({
+//         message: "User created successfully",
+//         token: token
+//     })
+// })
+
 
 //signin route
 const signinSchema = zod.object({
