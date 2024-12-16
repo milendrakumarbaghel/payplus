@@ -1,24 +1,8 @@
-const express = require('express');
-const { authMiddleware } = require('../middleware');
-const { Account } = require('../db');
-const { default: mongoose } = require('mongoose');
+const mongoose = require('mongoose');
+const { Account } = require('../models/accountSchema');
 
 
-const router = express.Router();
-
-//get balance router
-router.get('/balance', authMiddleware, async (req, res) => {
-    const account = await Account.findOne({
-    userId: req.userId
-})
-
-    res.json({
-        balance: account.balance
-    })
-});
-
-//transfer money router
-router.post('/transfer', authMiddleware, async (req, res) => {
+exports.moneyTransfer = async (req, res) => {
     const session = await mongoose.startSession();
 
     session.startTransaction();
@@ -43,7 +27,7 @@ router.post('/transfer', authMiddleware, async (req, res) => {
         });
     }
 
-    // Perform the transfer
+        // Perform the transfer
     await Account.updateOne({ userId: req.userId }, { $inc: { balance: -amount } }).session(session);
     await Account.updateOne({ userId: to }, { $inc: { balance: amount } }).session(session);
 
@@ -52,6 +36,4 @@ router.post('/transfer', authMiddleware, async (req, res) => {
     res.json({
         message: "Transfer successful"
     });
-})
-
-module.exports = router;
+}
