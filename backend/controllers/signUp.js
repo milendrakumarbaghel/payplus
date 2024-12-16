@@ -1,8 +1,16 @@
 const { Account } = require('../models/accountSchema');
 const { User } = require('../models/userSchema');
+const zod = require('zod');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = require('../config/config');
 
+const signupSchema = zod.object({
+    username: zod.string().email(),
+    password: zod.string(),
+    firstName: zod.string(),
+    middleName: zod.string(),
+    lastName: zod.string(),
+})
 
 exports.signUp = async (req, res) => {
     try {

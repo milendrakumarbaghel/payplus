@@ -2,6 +2,14 @@ const { Account } = require('../models/accountSchema');
 const { User } = require('../models/userSchema');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = require('../config/config');
+const zod = require('zod');
+
+const updateSchema = zod.object({
+    password: zod.string().optional(),
+    firstName: zod.string().optional(),
+    middleName: zod.string().optional(),
+    lastName: zod.string().optional(),
+})
 
 
 exports.updateUser = async (req, res) => {
