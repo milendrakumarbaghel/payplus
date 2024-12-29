@@ -2,7 +2,7 @@ const { Account } = require('../models/accountSchema');
 const { User } = require('../models/userSchema');
 const zod = require('zod');
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = require('../config/config');
+const { JWT_SECRET } = require('../config/config');
 const mongoose = require('mongoose');
 
 const signupSchema = zod.object({

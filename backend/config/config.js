@@ -1,2 +1,3 @@
-const JWT_SECRET = "spysecret";
-module.exports = JWT_SECRET;
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'fallbacksecretkey';
+module.exports = { JWT_SECRET };
