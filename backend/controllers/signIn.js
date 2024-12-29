@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = require('../config/config');
 const zod = require('zod');
 const { router } = require('../routes/user');
+const mongoose = require('mongoose');
 
 const signinSchema = zod.object({
     username: zod.string().email(),
@@ -31,7 +32,7 @@ exports.signIn = async (req, res) => {
         }, JWT_SECRET);
 
         res.json({
-            // message: "signed in",
+            message: "signed in successfull",
             token: token
         })
         return;

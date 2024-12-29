@@ -2,6 +2,7 @@
     const { User } = require('../models/userSchema');
     const jwt = require('jsonwebtoken');
     const JWT_SECRET = require('../config/config');
+    const mongoose = require('mongoose');
 
     exports.getUser = async (req, res) => {
         const filter = req.query.filter || "";

@@ -3,6 +3,7 @@ const { User } = require('../models/userSchema');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = require('../config/config');
 const zod = require('zod');
+const mongoose = require('mongoose');
 
 const updateSchema = zod.object({
     password: zod.string().optional(),
