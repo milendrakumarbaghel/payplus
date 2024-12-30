@@ -1,24 +1,15 @@
-    const { Account } = require('../models/accountSchema');
-    const { User } = require('../models/userSchema');
-    const jwt = require('jsonwebtoken');
-    const { JWT_SECRET } = require('../config/config');
-    const mongoose = require('mongoose');
+const { User } = require('../models/userSchema');
 
-    exports.getUser = async (req, res) => {
+exports.getUser = async (req, res) => {
+    try {
         const filter = req.query.filter || "";
         const users = await User.find({
-            $or: [{
-                firstName: {
-                    "$regex": filter
-                },
-                middleName: {
-                    "$regex": filter
-                },
-                lastName: {
-                    "$regex": filter
-                }
-            }]
-        })
+            $or: [
+                { firstName: { "$regex": filter, "$options": "i" } },
+                { middleName: { "$regex": filter, "$options": "i" } },
+                { lastName: { "$regex": filter, "$options": "i" } }
+            ]
+        });
 
         res.json({
             user: users.map(user => ({
@@ -28,5 +19,9 @@
                 lastName: user.lastName,
                 _id: user._id
             }))
-        })
+        }); 
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
+};

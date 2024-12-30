@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 exports.router = router;
-const zod = require('zod');
+
 const { authMiddleware } = require('../middlewares/middleware');
 const { signUp } = require('../controllers/signUp');
 const { signIn } = require('../controllers/signIn');
@@ -18,6 +18,6 @@ router.post('/signin', signIn);
 router.put('/updateinfo', authMiddleware, updateUser);
 
 //get users route
-router.get('/getuser', getUser)
+router.get('/getusers', getUser)
 
 module.exports = router;
