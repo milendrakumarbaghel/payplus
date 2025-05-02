@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "prisma": "^6.7.0"
   },
@@ -17,6 +17,6 @@
     "@prisma/client": "^6.7.0"
   },
   "exports": {
-    "./client": "./src/index.ts"
+    "./client": "./index.ts"
   }
 }

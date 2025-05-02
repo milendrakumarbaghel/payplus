@@ -12,9 +12,12 @@
   },
   "dependencies": {
     "@repo/db": "*",
+    "@repo/store": "*",
     "@repo/ui": "*",
     "@tailwindcss/postcss": "^4.1.4",
+    "bcrypt": "^5.1.1",
     "next": "^15.3.0",
+    "next-auth": "^4.24.11",
     "postcss": "^8.4.31",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -24,6 +27,7 @@
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^22.15.3",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
