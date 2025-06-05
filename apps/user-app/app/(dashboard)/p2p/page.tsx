@@ -17,20 +17,20 @@ async function getBalance() {
     }
 }
 
-async function getP2PTransactions() {
-    const session = await getServerSession(authOptions);
-    const txns = await prisma.p2PTransfer.findMany({
-        where: {
-            userId: Number(session?.user?.id)
-        }
-    });
-    return txns.map(t => ({
-        time: t.startTime,
-        amount: t.amount,
-        status: t.status,
-        provider: t.provider
-    }))
-}
+// async function getP2PTransactions() {
+//     const session = await getServerSession(authOptions);
+//     const txns = await prisma.transactionPersonToPerson.findMany({
+//         where: {
+//             userId: Number(session?.user?.id)
+//         }
+//     });
+//     return txns.map(t => ({
+//         time: t.startTime,
+//         amount: t.amount,
+//         status: t.status,
+//         provider: t.provider
+//     }))
+// }
 
 export default function() {
     return <div className="w-full">

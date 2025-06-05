@@ -23,6 +23,9 @@ export async function p2pTransfer(to: string, amount: number) {
         }
     }
     await prisma.$transaction(async (tx) => {
+        console.log("Transaction keys:", Object.keys(tx));
+        console.log(Object.keys(prisma));
+
         // Lock the balance row for the sender to prevent
         await tx.$queryRaw`SELECT * FROM "Balance" WHERE "userId" = ${Number(from)} FOR UPDATE`;
 
@@ -43,7 +46,7 @@ export async function p2pTransfer(to: string, amount: number) {
             data: { amount: { increment: amount } },
         });
 
-        await tx.transferP2P.create({
+        await tx.p2PTransaction.create({
             data: {
                 fromUserId: Number(from),
                 toUserId: toUser.id,
