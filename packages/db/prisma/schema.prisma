@@ -22,8 +22,8 @@ model User {
   password          String
   OnRampTransaction OnRampTransaction[]
   Balance           Balance[]
-  sentTransfers     p2pTransfer[]       @relation(name: "FromUserRelation")
-  receivedTransfers p2pTransfer[]       @relation(name: "ToUserRelation")
+  sentTransfers     TransferP2P[]       @relation(name: "FromUserRelation")
+  receivedTransfers TransferP2P[]       @relation(name: "ToUserRelation")
 }
 
 
@@ -45,7 +45,7 @@ model OnRampTransaction {
   user      User         @relation(fields: [userId], references: [id])
 }
 
-model p2pTransfer {
+model TransferP2P {
   id         Int          @id @default(autoincrement())
   amount     Int
   timestamp  DateTime
