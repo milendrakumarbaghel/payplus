@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { authMiddleware } = require('../middlewares/middleware');
-const { Account } = require('../config/database');
 const { getBalance } = require('../controllers/getBalance');
 const { moneyTransfer } = require('../controllers/moneyTransfer');
+const { createRequest, getRequestList } = require('../controllers/requestMoney');
 
 
 
@@ -11,6 +11,12 @@ const { moneyTransfer } = require('../controllers/moneyTransfer');
 router.get('/balance', authMiddleware, getBalance);
 
 //transfer money router
-router.post('/transfer', authMiddleware, moneyTransfer)
+router.post('/transfer', authMiddleware, moneyTransfer);
+
+//create request router
+router.post('/create/request', authMiddleware, createRequest);
+
+//get request list router
+router.get('/request/list', authMiddleware, getRequestList);
 
 module.exports = router;

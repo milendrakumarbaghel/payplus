@@ -5,62 +5,64 @@ const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/config');
 const mongoose = require('mongoose');
 
-const signupSchema = zod.object({
+const signupBody = zod.object({
     username: zod.string().email(),
     password: zod.string(),
     firstName: zod.string(),
-    middleName: zod.string(),
     lastName: zod.string(),
 })
 
 exports.signUp = async (req, res) => {
-    try {
-        const body = req.body;
-        const { success } = signupSchema.safeParse(body);
+  try {
+    const { data, error } = signupBody.safeParse(req.body);
 
-        if (!success) {
-            return res.status(411).json({
-                message: "Email already taken / Incorrect inputs"
-            });
-        }
-
-        const existingUser = await User.findOne({
-            username: body.username,
-        });
-
-        if (existingUser) {
-            return res.status(411).json({
-                message: "Email already taken / Incorrect inputs"
-            });
-        }
-
-        const user = await User.create({
-            username: body.username,
-            password: body.password,
-            firstName: body.firstName,
-            middleName: body.middleName,
-            lastName: body.lastName
-        });
-        const userId = user._id;
-
-        // Create new account
-        await Account.create({
-            userId,
-            balance: 1 + Math.random() * 10000
-        });
-
-        const token = jwt.sign({
-            userId: user._id
-        }, JWT_SECRET);
-
-        res.json({
-            message: "User created successfully",
-            token: token
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Internal server error",
-            error: error.message
-        });
+    if (error) {
+      return res.status(411).json({
+        msg: "Invalid credentials",
+      });
     }
+
+    const existingUser = await User.findOne({
+      username: req.body.username,
+    });
+
+    if (existingUser) {
+      return res.status(411).json({
+        msg: "User already exists",
+      });
+    }
+
+    const user = await User.create({
+      username: data.username,
+      password: data.password,
+      firstName: data.firstName, // Corrected property name
+      lastName: data.lastName, // Corrected property name
+    });
+
+    const userId = user._id;
+
+    userBankAccount = await Account.create({
+      userId,
+      balance: Math.floor(Math.random() * (100000 - 10000 + 1)) + 10000,
+    });
+
+    const token = jwt.sign(
+      {
+        userId,
+      },
+      process.env.JWT_SECRET
+    );
+
+    return res.status(200).json({
+      msg: "User Created",
+      token: token,
+      userId: userId,
+      firstName: user.firstName,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      msg: "Internal server error",
+    });
+  }
 }

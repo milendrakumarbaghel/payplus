@@ -1,39 +1,74 @@
 const mongoose = require('mongoose');
+const zod = require('zod');
 const { Account } = require('../models/accountSchema');
 
+const transferBody = zod.object({
+  amount_to_transfer: zod.number(),
+  paye_id: zod.string(),
+});
+
+
+const transferFunds = async (fromAccountId, toAccountId, amount, session) => {
+  try {
+    const fromAccount = await Account.findOneAndUpdate(
+      { _id: fromAccountId },
+      { $inc: { balance: -amount } },
+      { new: true, session }
+    );
+
+    const toAccount = await Account.findOneAndUpdate(
+      { userId: toAccountId },
+      { $inc: { balance: amount } },
+      { new: true, session }
+    );
+
+    if (!fromAccount || !toAccount) {
+      throw new Error("Account not found");
+    }
+
+    return "Transfer successful";
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error updating balances");
+  }
+};
 
 exports.moneyTransfer = async (req, res) => {
     const session = await mongoose.startSession();
+  session.startTransaction();
 
-    session.startTransaction();
-    const { amount, to } = req.body;
-
-    // Fetch the accounts within the transaction
-    const account = await Account.findOne({ userId: req.userId }).session(session);
-
-    if (!account || account.balance < amount) {
-        await session.abortTransaction();
-        return res.status(400).json({
-            message: "Insufficient balance"
-        });
+  try {
+    const { data, error } = transferBody.safeParse(req.body);
+    if (error) {
+      throw new Error("Invalid input");
     }
 
-    const toAccount = await Account.findOne({ userId: to }).session(session);
+    const userAccount = await Account.findOne({ userId: req.userId }).session(
+      session
+    );
+    const balance = userAccount.balance;
 
-    if (!toAccount) {
-        await session.abortTransaction();
-        return res.status(400).json({
-            message: "Invalid account"
-        });
+    if (balance < data.amount_to_transfer) {
+      throw new Error("Insufficient amount");
     }
 
-        // Perform the transfer
-    await Account.updateOne({ userId: req.userId }, { $inc: { balance: -amount } }).session(session);
-    await Account.updateOne({ userId: to }, { $inc: { balance: amount } }).session(session);
-
-    // Commit the transaction
+    await transferFunds(
+      userAccount._id,
+      data.paye_id,
+      data.amount_to_transfer,
+      session
+    );
     await session.commitTransaction();
-    res.json({
-        message: "Transfer successful"
-    });
+
+    return res.status(200).json({ msg: "Transfer successful" });
+  } catch (error) {
+    console.error(error);
+    await session.abortTransaction();
+
+    return res
+      .status(500)
+      .json({ msg: "Internal server error", error: error.message });
+  } finally {
+    session.endSession();
+  }
 }

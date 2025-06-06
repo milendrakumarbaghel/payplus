@@ -8,6 +8,8 @@ const { signIn } = require('../controllers/signIn');
 const { updateUser } = require('../controllers/updateUser');
 const { getUser } = require('../controllers/getUser');
 
+
+
 // signup route
 router.post('/signup', signUp);
 

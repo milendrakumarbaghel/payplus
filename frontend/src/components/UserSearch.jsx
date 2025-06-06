@@ -17,7 +17,7 @@ export const UserSearch = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `${apiUrl}/api/v1/user/bulk`,
+        `${apiUrl}/api/v1/user/getusers`,
         {
           params: {
             filter,

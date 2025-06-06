@@ -5,29 +5,48 @@ const { JWT_SECRET } = require('../config/config');
 const zod = require('zod');
 const mongoose = require('mongoose');
 
-const updateSchema = zod.object({
+const updateBody = zod.object({
     password: zod.string().optional(),
     firstName: zod.string().optional(),
-    middleName: zod.string().optional(),
     lastName: zod.string().optional(),
 })
 
 
 exports.updateUser = async (req, res) => {
-        const body = req.body;
-        const {success} = updateSchema.safeParse(req.body);
+  try {
+    const { data, error } = updateBody.safeParse(req.body.payload);
 
-        if(!success) {
-            res.status(411).json({
-                message: "Error while updating information"
-            })
-        }
+    const payLoad = {};
+    if (data.firstName) {
+      payLoad.firstName = data.firstName;
+    }
 
-        await User.updateOne({
-            _id: body.userId
-        }, body)
+    if (data.lastName) {
+      payLoad.lastName = data.lastName;
+    }
 
-        res.json({
-            message: "Updated successfully"
-        })
+    if (error) {
+      return res.status(403).json({ msg: "Invalid credential" });
+    }
+
+    const userCheck = await User.findById(req.userId);
+    if (!userCheck) {
+      return res.status(403).json({ msg: "Invalid credential" });
+    }
+    if (userCheck.password !== data.password) {
+      console.log(
+        "userCheck.password--",
+        userCheck.password,
+        "data.password---",
+        data.password
+      );
+      return res.status(403).json({ msg: "Password is wrong" });
+    }
+
+    await User.updateOne({ _id: req.userId }, { $set: payLoad });
+    return res.status(200).json({ msg: "Updated successfully" });
+  } catch (err) {
+    console.error("Error updating user:", err.message);
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
 }
