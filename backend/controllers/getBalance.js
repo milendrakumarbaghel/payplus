@@ -16,6 +16,7 @@ exports.getBalance = async (req, res) => {
   const user = await User.findOne({
     _id: req.userId,
   });
+  
   //   console.log(balance);
   return res.status(200).json({
     msg: "Balanced is fetched",
