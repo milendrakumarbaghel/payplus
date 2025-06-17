@@ -104,8 +104,7 @@ export const Signin = () => {
           </span>
         </h1>
         <p className="text-gray-400 text-lg px-10">
-          A fun digital payment platform, where user can signup and get virtual
-          coins and send it to other users
+          A playful digital payment platform where users sign up, earn virtual money, and send them to friends with ease.
         </p>
       </div>
       <div className="p-28 w-full md:w-[550px] md:h-[600px] mt-20 mx-auto bg-slate-950 rounded-lg">
