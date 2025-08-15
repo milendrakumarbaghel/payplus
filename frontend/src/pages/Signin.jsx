@@ -7,16 +7,29 @@ import axios from "axios";
 import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 
-
 const apiUrl = import.meta.env.VITE_API_URL || "localhost:4000";
-
 
 export const Signin = () => {
   const [username, setUsername] = useState("");
   const [password, setpassword] = useState("");
   const [tracker, setTracker] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
   async function signInFun() {
+    // Reset errors
+    setErrors({});
+    
+    // Validation
+    if (!username.trim()) {
+      setErrors(prev => ({ ...prev, username: "Email is required" }));
+      return;
+    }
+    if (!password.trim()) {
+      setErrors(prev => ({ ...prev, password: "Password is required" }));
+      return;
+    }
+
     try {
       setTracker(true);
       const res = await axios.post(
@@ -31,152 +44,125 @@ export const Signin = () => {
       window.location.reload(false);
       setTracker(false);
     } catch (error) {
-      alert("Invalid credentials");
+      setErrors({ general: "Invalid credentials. Please try again." });
       setTracker(false);
     }
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-5">
-      <div className="flex flex-col items-center w-full md:w-2/4 mt-[15%]">
-        <h1 className=" flex gap-3 items-center text-5xl font-bold p-10 mx-44 text-gray-200">
-          PayPlus
-          <span className="w-20">
-            {" "}
-            <svg
-              viewBox="0 0 32 32"
-              enableBackground="new 0 0 32 32"
-              id="Stock_cut"
-              version="1.1"
-              xmlSpace="preserve"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#fff"
-              stroke="#fff"
-            >
-              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g
-                id="SVGRepo_tracerCarrier"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></g>
-              <g id="SVGRepo_iconCarrier">
-                {" "}
-                <desc></desc>{" "}
-                <g>
-                  {" "}
-                  <path
-                    d="M17,5H5 C3.895,5,3,5.895,3,7v22c0,1.105,0.895,2,2,2h18c1.105,0,2-0.895,2-2V18"
-                    fill="none"
-                    stroke="#fff"
-                    strokeLinejoin="round"
-                    strokeMiterlimit="10"
-                    strokeWidth="2"
-                  ></path>{" "}
-                  <path
-                    d="M9,14H3v8h6 c2.209,0,4-1.791,4-4v0C13,15.791,11.209,14,9,14z"
-                    fill="none"
-                    stroke="#fff"
-                    strokeLinejoin="round"
-                    strokeMiterlimit="10"
-                    strokeWidth="2"
-                  ></path>{" "}
-                  <circle cx="9" cy="18" r="1"></circle>{" "}
-                  <line
-                    fill="none"
-                    stroke="#fff"
-                    strokeLinejoin="round"
-                    strokeMiterlimit="10"
-                    strokeWidth="2"
-                    x1="25"
-                    x2="25"
-                    y1="16"
-                    y2="1"
-                  ></line>{" "}
-                  <polyline
-                    fill="none"
-                    points="31,7 25,1 19,7 "
-                    stroke="#fff"
-                    strokeLinejoin="round"
-                    strokeMiterlimit="10"
-                    strokeWidth="2"
-                  ></polyline>{" "}
-                </g>{" "}
-              </g>
-            </svg>
-          </span>
-        </h1>
-        <p className="text-gray-400 text-lg px-10">
-          A playful digital payment platform where users sign up, earn virtual money, and send them to friends with ease.
-        </p>
-      </div>
-      <div className="p-28 w-full md:w-[550px] md:h-[600px] mt-20 mx-auto bg-slate-950 rounded-lg">
-        <Heading title={"SignIn"} />
-        <Subheading lable={"Enter your details to SignIn"} />
-        <Inputbox
-          onChange={(e) => setUsername(e.target.value)}
-          lable={"Email"}
-          val={"abc@gmail.com"}
-        />
-        <Inputbox
-          onChange={(e) => setpassword(e.target.value)}
-          lable={"password"}
-          val={"eg. abcd1234"}
-          type={"password"}
-        />
-        <Button
-          onClick={signInFun}
-          lable={
-            tracker ? (
-              <div className="flex justify-center  items-center">
-                <div
-                  className="animate-spin inline-block w-5 h-5 mr-4 border-[3px] border-current border-t-transparent text-white rounded-full "
-                  role="status"
-                  aria-label="loading"
-                >
-                  <span className="sr-only">Loading...</span>
-                </div>
-                <p>Signing in...</p>
-              </div>
-            ) : (
-              "SignIn"
-            )
-          }
-        />
-
-        <div className="mt-4">
-          <GoogleLogin
-            onSuccess={async (credentialResponse) => {
-              const token = credentialResponse.credential;
-
-              try {
-                const res = await axios.post(`${apiUrl}/api/v1/user/google-auth`, {
-                  token,
-                });
-
-                localStorage.setItem("token", res.data.token);
-                navigate("/dashboard");
-                window.location.reload(false);
-              } catch (err) {
-                console.error("Google Sign-In Failed", err);
-                alert("Google sign-in failed");
-              }
-            }}
-            onError={() => {
-              console.log("Google Login Failed");
-              alert("Google Login Failed");
-            }}
-          />
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        {/* Header */}
+        <div className="text-center">
+          <div className="flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
+              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold gradient-text mb-2">Welcome Back</h1>
+          <p className="text-slate-400 text-lg">
+            Sign in to your PayPlus account
+          </p>
         </div>
 
-        <p className="text-sm text-gray-500 mt-1 text-center">
-          Dont have an account?{" "}
-          <a
-            onClick={() => navigate("/signup")}
-            className="underline font-bold cursor-pointer hover:text-slate-300"
-          >
-            SignUp
-          </a>
-        </p>
+        {/* Sign In Form */}
+        <div className="card p-8">
+          {errors.general && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+              <p className="text-red-400 text-sm">{errors.general}</p>
+            </div>
+          )}
+
+          <div className="space-y-6">
+            <Inputbox
+              onChange={(e) => setUsername(e.target.value)}
+              lable="Email Address"
+              val="Enter your email"
+              error={errors.username}
+            />
+            
+            <Inputbox
+              onChange={(e) => setpassword(e.target.value)}
+              lable="Password"
+              val="Enter your password"
+              type="password"
+              error={errors.password}
+            />
+
+            <Button
+              onClick={signInFun}
+              lable={
+                tracker ? (
+                  <div className="flex justify-center items-center">
+                    <div className="animate-spin inline-block w-5 h-5 mr-3 border-2 border-current border-t-transparent text-white rounded-full" />
+                    <span>Signing in...</span>
+                  </div>
+                ) : (
+                  "Sign In"
+                )
+              }
+              disabled={tracker}
+            />
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-700" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-slate-800 text-slate-400">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Google Sign In */}
+            <div className="flex justify-center">
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  const token = credentialResponse.credential;
+
+                  try {
+                    const res = await axios.post(`${apiUrl}/api/v1/user/google-auth`, {
+                      token,
+                    });
+
+                    localStorage.setItem("token", res.data.token);
+                    navigate("/dashboard");
+                    window.location.reload(false);
+                  } catch (err) {
+                    console.error("Google Sign-In Failed", err);
+                    setErrors({ general: "Google sign-in failed. Please try again." });
+                  }
+                }}
+                onError={() => {
+                  console.log("Google Login Failed");
+                  setErrors({ general: "Google login failed. Please try again." });
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Sign Up Link */}
+          <div className="mt-8 text-center">
+            <p className="text-slate-400 text-sm">
+              Don't have an account?{" "}
+              <button
+                onClick={() => navigate("/signup")}
+                className="text-blue-400 hover:text-blue-300 font-semibold transition-colors duration-200"
+              >
+                Sign up
+              </button>
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center">
+          <p className="text-slate-500 text-xs">
+            By signing in, you agree to our Terms of Service and Privacy Policy
+          </p>
+        </div>
       </div>
     </div>
   );

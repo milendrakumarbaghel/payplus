@@ -1,14 +1,17 @@
 import { useSearchParams } from "react-router-dom";
+
 export const SendDisplayUser = () => {
   const [searchParams] = useSearchParams();
   const fullName = searchParams.get("name");
+  
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center font-bold w-96 mt-4 md-0 rounded-md">
-        <h3 className="text-white font-bold m-3 w-5 h-5 bg-sky-600 rounded-full flex justify-center items-center text-center p-5 shadow-xl">
-          {fullName[0]}
-        </h3>
-        <h2>{fullName}</h2>
+    <div className="flex items-center space-x-4">
+      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold rounded-full flex items-center justify-center text-lg shadow-lg">
+        {fullName?.[0]?.toUpperCase() || "U"}
+      </div>
+      <div>
+        <h3 className="text-white font-semibold text-lg">{fullName || "Unknown User"}</h3>
+        <p className="text-slate-400 text-sm">Recipient</p>
       </div>
     </div>
   );

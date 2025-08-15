@@ -2,9 +2,7 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Button } from "../components/Button";
-import { Heading } from "../components/Heading";
 import { Inputbox } from "../components/Inputbox";
-import { Subheading } from "../components/Subheading";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -14,11 +12,37 @@ export const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setpassword] = useState("");
   const [tracker, setTracker] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-    const apiUrl = import.meta.env.VITE_API_URL || "localhost:4000";
+  const apiUrl = import.meta.env.VITE_API_URL || "localhost:4000";
 
   async function signUpFun() {
+    // Reset errors
+    setErrors({});
+    
+    // Validation
+    if (!firstName.trim()) {
+      setErrors(prev => ({ ...prev, firstName: "First name is required" }));
+      return;
+    }
+    if (!lastName.trim()) {
+      setErrors(prev => ({ ...prev, lastName: "Last name is required" }));
+      return;
+    }
+    if (!username.trim()) {
+      setErrors(prev => ({ ...prev, username: "Email is required" }));
+      return;
+    }
+    if (!password.trim()) {
+      setErrors(prev => ({ ...prev, password: "Password is required" }));
+      return;
+    }
+    if (password.length < 6) {
+      setErrors(prev => ({ ...prev, password: "Password must be at least 6 characters" }));
+      return;
+    }
+
     try {
       setTracker(true);
       const res = await axios.post(
@@ -36,6 +60,7 @@ export const Signup = () => {
       setTracker(false);
     } catch (error) {
       console.log("Invalid credentials");
+      setErrors({ general: "Failed to create account. Please try again." });
       setTracker(false);
     }
   }
@@ -45,139 +70,98 @@ export const Signup = () => {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-5">
-      <div className="flex flex-col items-center w-full md:w-2/4 mt-[15%]">
-        <h1 className=" flex gap-3 items-center text-5xl font-bold p-10 mx-44 text-gray-200">
-          PayPlus
-          <span className="w-20">
-            {" "}
-            <svg
-              viewBox="0 0 32 32"
-              enableBackground="new 0 0 32 32"
-              id="Stock_cut"
-              version="1.1"
-              xmlSpace="preserve"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#fff"
-              stroke="#fff"
-            >
-              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g
-                id="SVGRepo_tracerCarrier"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              ></g>
-              <g id="SVGRepo_iconCarrier">
-                {" "}
-                <desc></desc>{" "}
-                <g>
-                  {" "}
-                  <path
-                    d="M17,5H5 C3.895,5,3,5.895,3,7v22c0,1.105,0.895,2,2,2h18c1.105,0,2-0.895,2-2V18"
-                    fill="none"
-                    stroke="#fff"
-                    stroke-linejoin="round"
-                    stroke-miterlimit="10"
-                    stroke-width="2"
-                  ></path>{" "}
-                  <path
-                    d="M9,14H3v8h6 c2.209,0,4-1.791,4-4v0C13,15.791,11.209,14,9,14z"
-                    fill="none"
-                    stroke="#fff"
-                    stroke-linejoin="round"
-                    stroke-miterlimit="10"
-                    stroke-width="2"
-                  ></path>{" "}
-                  <circle cx="9" cy="18" r="1"></circle>{" "}
-                  <line
-                    fill="none"
-                    stroke="#fff"
-                    stroke-linejoin="round"
-                    stroke-miterlimit="10"
-                    stroke-width="2"
-                    x1="25"
-                    x2="25"
-                    y1="16"
-                    y2="1"
-                  ></line>{" "}
-                  <polyline
-                    fill="none"
-                    points="31,7 25,1 19,7 "
-                    stroke="#fff"
-                    stroke-linejoin="round"
-                    stroke-miterlimit="10"
-                    stroke-width="2"
-                  ></polyline>{" "}
-                </g>{" "}
-              </g>
-            </svg>
-          </span>
-        </h1>
-        <p className="text-gray-400 text-lg px-10">
-          A playful digital payment platform where users sign up, earn virtual money, and send them to friends with ease.
-        </p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        {/* Header */}
+        <div className="text-center">
+          <div className="flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
+              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold gradient-text mb-2">Join PayPlus</h1>
+          <p className="text-slate-400 text-lg">
+            Create your account and start sending money instantly
+          </p>
+        </div>
 
-      <div className="p-28 w-full md:w-[550px] md:h-[600px] mt-20 mx-auto bg-slate-950 rounded-lg">
-        <Heading title={"SignUp"} />
-        <Subheading lable={"Enter your details to create an account"} />
-        <Inputbox
-          onChange={(e) => {
-            setFirstName(e.target.value);
-          }}
-          lable={"First Name"}
-          val={"Jon"}
-        />
-        <Inputbox
-          onChange={(e) => {
-            setLastName(e.target.value);
-          }}
-          lable={"Last Name"}
-          val={"Doe"}
-        />
-        <Inputbox
-          onChange={(e) => {
-            setUsername(e.target.value);
-          }}
-          lable={"Email"}
-          val={"jondoe@gmail.com"}
-        />
-        <Inputbox
-          onChange={(e) => {
-            setpassword(e.target.value);
-          }}
-          lable={"Password"}
-          val={"eg. abcd1234"}
-          type={"password"}
-        />
-        <Button
-          onClick={signUpFun}
-          lable={
-            tracker ? (
-              <div className="flex justify-center  items-center">
-                <div
-                  className="animate-spin inline-block w-5 h-5 mr-4 border-[3px] border-current border-t-transparent text-white rounded-full "
-                  role="status"
-                  aria-label="loading"
-                >
-                  <span className="sr-only">Loading...</span>
-                </div>
-                <p>Signing up...</p>
-              </div>
-            ) : (
-              "SignUp"
-            )
-          }
-        />
-        <p className="text-sm text-gray-500 mt-1 text-center">
-          Already have an account?{" "}
-          <a
-            onClick={toSignIn}
-            className="underline font-bold cursor-pointer hover:text-slate-300"
-          >
-            SignIn
-          </a>
-        </p>
+        {/* Sign Up Form */}
+        <div className="card p-8">
+          {errors.general && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+              <p className="text-red-400 text-sm">{errors.general}</p>
+            </div>
+          )}
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Inputbox
+                onChange={(e) => setFirstName(e.target.value)}
+                lable="First Name"
+                val="Enter your first name"
+                error={errors.firstName}
+              />
+              <Inputbox
+                onChange={(e) => setLastName(e.target.value)}
+                lable="Last Name"
+                val="Enter your last name"
+                error={errors.lastName}
+              />
+            </div>
+            
+            <Inputbox
+              onChange={(e) => setUsername(e.target.value)}
+              lable="Email Address"
+              val="Enter your email"
+              error={errors.username}
+            />
+            
+            <Inputbox
+              onChange={(e) => setpassword(e.target.value)}
+              lable="Password"
+              val="Create a password"
+              type="password"
+              error={errors.password}
+            />
+
+            <Button
+              onClick={signUpFun}
+              lable={
+                tracker ? (
+                  <div className="flex justify-center items-center">
+                    <div className="animate-spin inline-block w-5 h-5 mr-3 border-2 border-current border-t-transparent text-white rounded-full" />
+                    <span>Creating account...</span>
+                  </div>
+                ) : (
+                  "Create Account"
+                )
+              }
+              disabled={tracker}
+            />
+          </div>
+
+          {/* Sign In Link */}
+          <div className="mt-8 text-center">
+            <p className="text-slate-400 text-sm">
+              Already have an account?{" "}
+              <button
+                onClick={toSignIn}
+                className="text-blue-400 hover:text-blue-300 font-semibold transition-colors duration-200"
+              >
+                Sign in
+              </button>
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center">
+          <p className="text-slate-500 text-xs">
+            By creating an account, you agree to our Terms of Service and Privacy Policy
+          </p>
+        </div>
       </div>
     </div>
   );
