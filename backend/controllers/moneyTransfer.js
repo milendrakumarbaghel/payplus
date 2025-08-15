@@ -34,7 +34,7 @@ const transferFunds = async (fromAccountId, toAccountId, amount, session) => {
 };
 
 exports.moneyTransfer = async (req, res) => {
-    const session = await mongoose.startSession();
+  const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
