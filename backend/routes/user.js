@@ -16,8 +16,9 @@ router.post('/signup', signUp);
 //signin route
 router.post('/signin', signIn);
 
-//update route
+//update routes
 router.put('/updateinfo', authMiddleware, updateUser);
+router.put('/user-update', authMiddleware, updateUser); // alias used by frontend
 
 //get users route
 router.get('/getusers', getUser);

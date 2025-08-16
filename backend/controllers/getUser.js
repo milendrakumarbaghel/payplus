@@ -1,7 +1,7 @@
-const { User } = require('../models/userSchema');
+const { prisma } = require('../prismaClient');
 
 exports.getUser = async (req, res) => {
-    try {
+  try {
     const filter = req.query.filter || "";
     const page = parseInt(req.query.page, 10) || 1; // Default to page 1
     const limit = parseInt(req.query.limit, 10) || 12; // Default to 10 items per page
@@ -10,21 +10,26 @@ exports.getUser = async (req, res) => {
     const skip = (page - 1) * limit;
 
     // Fetch filtered users with pagination
-    const users = await User.find({
-      $or: [
-        { firstName: { $regex: filter, $options: "i" } },
-        { lastName: { $regex: filter, $options: "i" } },
-      ],
-    })
-      .skip(skip)
-      .limit(limit);
+    const users = await prisma.user.findMany({
+      where: {
+        OR: [
+          { firstName: { contains: filter, mode: 'insensitive' } },
+          { lastName: { contains: filter, mode: 'insensitive' } },
+        ],
+      },
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' }
+    });
 
     // Get the total count of filtered users for pagination
-    const totalUsers = await User.countDocuments({
-      $or: [
-        { firstName: { $regex: filter, $options: "i" } },
-        { lastName: { $regex: filter, $options: "i" } },
-      ],
+    const totalUsers = await prisma.user.count({
+      where: {
+        OR: [
+          { firstName: { contains: filter, mode: 'insensitive' } },
+          { lastName: { contains: filter, mode: 'insensitive' } },
+        ],
+      },
     });
 
     // Calculate total pages
@@ -36,7 +41,7 @@ exports.getUser = async (req, res) => {
         username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
-        _id: user._id,
+        _id: user.id,
       })),
       totalPages,
       currentPage: page,

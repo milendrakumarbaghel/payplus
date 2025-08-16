@@ -1,12 +1,11 @@
-const { Account } = require('../models/accountSchema');
-const { User } = require('../models/userSchema');
+const { prisma } = require('../prismaClient');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/config');
 const zod = require('zod');
 
 const signinBody = zod.object({
-    username: zod.string().email(),
-    password: zod.string()
+  username: zod.string().email(),
+  password: zod.string()
 })
 
 
@@ -19,9 +18,8 @@ exports.signIn = async (req, res) => {
         message: "Email already taken / Incorrect inputs",
       });
     }
-    const user = await User.findOne({
-      username: data.username,
-      password: data.password,
+    const user = await prisma.user.findFirst({
+      where: { username: data.username, password: data.password }
     });
 
     if (!user) {
@@ -31,10 +29,8 @@ exports.signIn = async (req, res) => {
     }
 
     const token = jwt.sign(
-      {
-        userId: user._id,
-      },
-      process.env.JWT_SECRET
+      { userId: user.id },
+      JWT_SECRET
     );
 
     return res.status(200).json({

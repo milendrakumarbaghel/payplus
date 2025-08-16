@@ -1,11 +1,9 @@
-const { Account } = require('../models/accountSchema');
-const { User } = require('../models/userSchema');
-const mongoose = require('mongoose');
+const { prisma } = require('../prismaClient');
 
 
 exports.getBalance = async (req, res) => {
-    const userAccount = await Account.findOne({
-    userId: req.userId,
+  const userAccount = await prisma.account.findUnique({
+    where: { userId: req.userId }
   });
 
   if (!userAccount) {
@@ -13,10 +11,8 @@ exports.getBalance = async (req, res) => {
   }
 
   const balance = userAccount.balance;
-  const user = await User.findOne({
-    _id: req.userId,
-  });
-  
+  const user = await prisma.user.findUnique({ where: { id: req.userId } });
+
   //   console.log(balance);
   return res.status(200).json({
     msg: "Balanced is fetched",

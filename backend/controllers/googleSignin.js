@@ -1,8 +1,7 @@
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models/userSchema');
+const { prisma } = require('../prismaClient');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-const { Account } = require('../models/accountSchema');
 
 exports.googleSignin = async (req, res) => {
   const { token } = req.body;
@@ -24,25 +23,27 @@ exports.googleSignin = async (req, res) => {
       return res.status(400).json({ error: 'Email is required from Google token' });
     }
 
-    let user = await User.findOne({ username: email });
+    let user = await prisma.user.findUnique({ where: { username: email } });
 
     if (!user) {
-      user = new User({
-        username: email,
-        password: 'google_oauth', // Consider hashing or replacing if needed
-        firstName: given_name || 'First',
-        lastName: family_name || 'Last',
+      const initialBalance = Math.floor(Math.random() * (100000 - 10000 + 1)) + 10000;
+      user = await prisma.$transaction(async (tx) => {
+        const createdUser = await tx.user.create({
+          data: {
+            username: email,
+            password: 'google_oauth',
+            firstName: given_name || 'First',
+            lastName: family_name || 'Last',
+          },
+        });
+        await tx.account.create({
+          data: { userId: createdUser.id, balance: initialBalance },
+        });
+        return createdUser;
       });
-
-      await user.save();
     }
 
-    const userId = user._id;
-
-    userBankAccount = await Account.create({
-      userId,
-      balance: Math.floor(Math.random() * (100000 - 10000 + 1)) + 10000,
-    });
+    const userId = user.id;
 
     const jwtToken = jwt.sign(
       {

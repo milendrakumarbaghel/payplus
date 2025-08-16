@@ -21,9 +21,6 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-//connecting to database
-const dbConnect = require('./config/database');
-dbConnect();
 
 // Error handling
 app.use((err, req, res, next) => {

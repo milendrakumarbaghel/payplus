@@ -1,14 +1,10 @@
-const { Account } = require('../models/accountSchema');
-const { User } = require('../models/userSchema');
-const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../config/config');
+const { prisma } = require('../prismaClient');
 const zod = require('zod');
-const mongoose = require('mongoose');
 
 const updateBody = zod.object({
-    password: zod.string().optional(),
-    firstName: zod.string().optional(),
-    lastName: zod.string().optional(),
+  password: zod.string().optional(),
+  firstName: zod.string().optional(),
+  lastName: zod.string().optional(),
 })
 
 
@@ -29,7 +25,7 @@ exports.updateUser = async (req, res) => {
       return res.status(403).json({ msg: "Invalid credential" });
     }
 
-    const userCheck = await User.findById(req.userId);
+    const userCheck = await prisma.user.findUnique({ where: { id: req.userId } });
     if (!userCheck) {
       return res.status(403).json({ msg: "Invalid credential" });
     }
@@ -43,7 +39,7 @@ exports.updateUser = async (req, res) => {
       return res.status(403).json({ msg: "Password is wrong" });
     }
 
-    await User.updateOne({ _id: req.userId }, { $set: payLoad });
+    await prisma.user.update({ where: { id: req.userId }, data: payLoad });
     return res.status(200).json({ msg: "Updated successfully" });
   } catch (err) {
     console.error("Error updating user:", err.message);
