@@ -57,6 +57,8 @@ export const SendMoney = () => {
       }
 
       setSuccess(true);
+      // Notify other components to refresh (e.g., Appbar notifications)
+      window.dispatchEvent(new Event('payplus:refresh'));
       setTimeout(() => {
         navigate("/dashboard");
       }, 2000);

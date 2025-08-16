@@ -11,31 +11,49 @@ export const Dashboard = () => {
   const [loading, setLoading] = useState(true); // Separate loading state for better control
   const [error, setError] = useState("");
 
-  const apiUrl = import.meta.env.VITE_API_URL || "localhost:4000";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
+  const fetchBalance = async () => {
+    try {
+      const response = await axios.get(
+        `${apiUrl}/api/v1/bank/balance`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const data = response.data;
+      setFirstName(data.firstName || "User");
+      setBalance(data.balance || 0);
+    } catch (err) {
+      console.error("Error fetching balance:", err);
+      setError("Failed to fetch balance. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchBalance = async () => {
-      try {
-        const response = await axios.get(
-          `${apiUrl}/api/v1/bank/balance`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        const data = response.data;
-        setFirstName(data.firstName || "User");
-        setBalance(data.balance || 0);
-      } catch (err) {
-        console.error("Error fetching balance:", err);
-        setError("Failed to fetch balance. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    // initial fetch
     fetchBalance();
+
+    // refetch on window focus
+    const onFocus = () => fetchBalance();
+    window.addEventListener('focus', onFocus);
+
+    // refetch when other pages dispatch refresh event
+    const onRefresh = () => fetchBalance();
+    window.addEventListener('payplus:refresh', onRefresh);
+
+    // optional polling every 10s
+    const interval = setInterval(fetchBalance, 10000);
+
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('payplus:refresh', onRefresh);
+      clearInterval(interval);
+    };
   }, []);
 
   if (loading) {

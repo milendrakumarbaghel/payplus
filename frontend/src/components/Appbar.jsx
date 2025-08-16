@@ -7,7 +7,7 @@ export const Appbar = ({ nameFirstLetter }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
-  const apiUrl = import.meta.env.VITE_API_URL || "localhost:4000";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
   const toUpdateUser = () => {
     navigate("/update-user");
@@ -27,41 +27,58 @@ export const Appbar = ({ nameFirstLetter }) => {
     navigate(`/send?id=${requestFromId}&name=${requesterName}&amount=${amount}&requestId=${requestId}`);
   };
 
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get(
+        `${apiUrl}/api/v1/bank/request/list`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const { data } = response.data;
+
+      const transformedNotifications = data.map((item) => {
+        const requesterName = item.requestFromIdId?.firstName || "Someone";
+        const requestFromId = item.requestFromIdId?._id || null;
+        const amount = item.amountRequested || 0;
+        return {
+          id: item._id,
+          message: `${requesterName} requested ₹${amount} from you`,
+          requestFromId: requestFromId,
+          requesterName: requesterName,
+          amount: amount,
+        };
+      });
+
+      setNotifications(transformedNotifications);
+    } catch (err) {
+      console.error("Error fetching notifications:", err);
+    }
+  };
+
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await axios.get(
-          `${apiUrl}/api/v1/bank/request/list`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
-        const { data } = response.data;
-
-        // Transforming data into notification messages
-        const transformedNotifications = data.map((item) => {
-          const requesterName = item.requestFromIdId?.firstName || "Someone";
-          const requestFromId = item.requestFromIdId?._id || null;
-          const amount = item.amountRequested || 0;
-          return {
-            id: item._id,
-            message: `${requesterName} requested ₹${amount} from you`,
-            requestFromId: requestFromId,
-            requesterName: requesterName,
-            amount: amount,
-          };
-        });
-
-        setNotifications(transformedNotifications);
-      } catch (err) {
-        console.error("Error fetching notifications:", err);
-      }
-    };
-
+    // initial fetch
     fetchNotifications();
+
+    // refetch on window focus
+    const onFocus = () => fetchNotifications();
+    window.addEventListener('focus', onFocus);
+
+    // refetch on custom refresh events (e.g., after payment)
+    const onRefresh = () => fetchNotifications();
+    window.addEventListener('payplus:refresh', onRefresh);
+
+    // poll every 10s
+    const interval = setInterval(fetchNotifications, 10000);
+
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('payplus:refresh', onRefresh);
+      clearInterval(interval);
+    };
   }, []);
 
   return (
