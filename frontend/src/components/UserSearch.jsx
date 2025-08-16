@@ -23,6 +23,9 @@ export const UserSearch = () => {
             page,
             limit: 12, // Number of users per page
           },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
         }
       );
       setUsers(res.data.users || []);
@@ -103,15 +106,14 @@ export const UserSearch = () => {
                 <button
                   onClick={() => handlePageChange(-1)}
                   disabled={page === 1}
-                  className={`px-4 py-2 mr-3 rounded-lg font-medium transition-all duration-200 ${
-                    page === 1
+                  className={`px-4 py-2 mr-3 rounded-lg font-medium transition-all duration-200 ${page === 1
                       ? "bg-slate-700/50 text-slate-500 cursor-not-allowed"
                       : "bg-slate-700/50 text-white hover:bg-slate-600/50 hover:scale-105"
-                  }`}
+                    }`}
                 >
                   Previous
                 </button>
-                
+
                 <div className="flex items-center space-x-2">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     const pageNum = i + 1;
@@ -119,26 +121,24 @@ export const UserSearch = () => {
                       <button
                         key={pageNum}
                         onClick={() => setPage(pageNum)}
-                        className={`w-10 h-10 rounded-lg font-medium transition-all duration-200 ${
-                          page === pageNum
+                        className={`w-10 h-10 rounded-lg font-medium transition-all duration-200 ${page === pageNum
                             ? "bg-blue-500 text-white"
                             : "bg-slate-700/50 text-slate-300 hover:bg-slate-600/50"
-                        }`}
+                          }`}
                       >
                         {pageNum}
                       </button>
                     );
                   })}
                 </div>
-                
+
                 <button
                   onClick={() => handlePageChange(1)}
                   disabled={page === totalPages}
-                  className={`px-4 py-2 ml-3 rounded-lg font-medium transition-all duration-200 ${
-                    page === totalPages
+                  className={`px-4 py-2 ml-3 rounded-lg font-medium transition-all duration-200 ${page === totalPages
                       ? "bg-slate-700/50 text-slate-500 cursor-not-allowed"
                       : "bg-slate-700/50 text-white hover:bg-slate-600/50 hover:scale-105"
-                  }`}
+                    }`}
                 >
                   Next
                 </button>

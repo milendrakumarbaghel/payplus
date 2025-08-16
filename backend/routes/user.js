@@ -20,8 +20,8 @@ router.post('/signin', signIn);
 router.put('/updateinfo', authMiddleware, updateUser);
 router.put('/user-update', authMiddleware, updateUser); // alias used by frontend
 
-//get users route
-router.get('/getusers', getUser);
+//get users route (auth to exclude current user)
+router.get('/getusers', authMiddleware, getUser);
 
 //google signin route
 router.post('/google-auth', googleSignin);

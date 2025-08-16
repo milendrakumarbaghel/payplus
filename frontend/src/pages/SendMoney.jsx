@@ -8,7 +8,9 @@ import { useState } from "react";
 export const SendMoney = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
-  const [amount, setAmount] = useState("");
+  const defaultAmount = searchParams.get("amount");
+  const requestId = searchParams.get("requestId");
+  const [amount, setAmount] = useState(defaultAmount || "");
   const [tracker, setTracker] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -20,7 +22,7 @@ export const SendMoney = () => {
     // Reset states
     setError("");
     setSuccess(false);
-    
+
     // Validation
     if (!amount || amount <= 0) {
       setError("Please enter a valid amount");
@@ -29,25 +31,35 @@ export const SendMoney = () => {
 
     try {
       setTracker(true);
-      const res = await axios.post(
-        `${apiUrl}/api/v1/bank/transfer`,
-        {
-          amount_to_transfer: Number(amount),
-          paye_id: id,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
+      const reqId = searchParams.get('requestId');
+
+      if (reqId) {
+        // Fulfill flow: server uses the stored requested amount and deletes the request
+        await axios.post(
+          `${apiUrl}/api/v1/bank/request/fulfill/${reqId}`,
+          {},
+          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        );
+      } else {
+        // Normal send money flow
+        await axios.post(
+          `${apiUrl}/api/v1/bank/transfer`,
+          {
+            amount_to_transfer: Number(amount),
+            paye_id: id,
           },
-        }
-      );
-      
-      if (res.data.msg === "Transfer successful") {
-        setSuccess(true);
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 2000);
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
       }
+
+      setSuccess(true);
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
     } catch (error) {
       console.error("Transfer failed:", error);
       setError("Transfer failed. Please try again.");
@@ -106,6 +118,8 @@ export const SendMoney = () => {
               lable="Amount (₹)"
               val="Enter amount to send"
               type="number"
+              value={requestId ? defaultAmount : undefined}
+              disabled={Boolean(requestId)}
               error={error && !amount ? "Amount is required" : ""}
             />
 

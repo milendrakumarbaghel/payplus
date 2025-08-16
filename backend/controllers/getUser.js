@@ -12,6 +12,7 @@ exports.getUser = async (req, res) => {
     // Fetch filtered users with pagination
     const users = await prisma.user.findMany({
       where: {
+        id: { not: req.userId },
         OR: [
           { firstName: { contains: filter, mode: 'insensitive' } },
           { lastName: { contains: filter, mode: 'insensitive' } },
@@ -25,6 +26,7 @@ exports.getUser = async (req, res) => {
     // Get the total count of filtered users for pagination
     const totalUsers = await prisma.user.count({
       where: {
+        id: { not: req.userId },
         OR: [
           { firstName: { contains: filter, mode: 'insensitive' } },
           { lastName: { contains: filter, mode: 'insensitive' } },

@@ -23,8 +23,8 @@ export const Appbar = ({ nameFirstLetter }) => {
     setShowNotifications(!showNotifications);
   };
 
-  const handlePayPlus = (requestFromId, requesterName) => {
-    navigate(`/send?id=${requestFromId}&name=${requesterName}`);
+  const handlePayPlus = (requestFromId, requesterName, amount, requestId) => {
+    navigate(`/send?id=${requestFromId}&name=${requesterName}&amount=${amount}&requestId=${requestId}`);
   };
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export const Appbar = ({ nameFirstLetter }) => {
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                 </svg>
               </div>
             </h1>
@@ -156,7 +156,9 @@ export const Appbar = ({ nameFirstLetter }) => {
                               onClick={() =>
                                 handlePayPlus(
                                   notification.requestFromId,
-                                  notification.requesterName
+                                  notification.requesterName,
+                                  notification.amount,
+                                  notification.id
                                 )
                               }
                               className="ml-3 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200"
