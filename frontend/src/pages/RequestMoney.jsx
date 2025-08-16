@@ -1,9 +1,10 @@
 import { Button } from "../components/Button";
 import { Inputbox } from "../components/Inputbox";
-import { SendDisplayUser } from "../components/SendDisplayUser";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
+import { UserSearch } from "../components/UserSearch";
+import { Layout } from "../components/Layout";
 
 export const RequestMoney = () => {
   const [searchParams] = useSearchParams();
@@ -20,7 +21,7 @@ export const RequestMoney = () => {
     // Reset states
     setError("");
     setSuccess(false);
-    
+
     // Validation
     if (!amount || amount <= 0) {
       setError("Please enter a valid amount");
@@ -59,95 +60,61 @@ export const RequestMoney = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            </div>
+    <Layout>
+      <div className="py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Breadcrumb */}
+          <div className="text-sm text-slate-400">
+            <button onClick={() => navigate('/dashboard')} className="hover:text-slate-200 transition-colors">Dashboard</button>
+            <span className="px-2">/</span>
+            <span className="text-slate-300">Request</span>
           </div>
-          <h1 className="text-4xl font-bold gradient-text mb-2">Request Money</h1>
-          <p className="text-slate-400 text-lg">
-            Ask your friends to send you money
-          </p>
-        </div>
-
-        {/* Request Money Form */}
-        <div className="card p-8">
-          {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-              <p className="text-red-400 text-sm">{error}</p>
-            </div>
-          )}
-
-          {success && (
-            <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          {/* Header */}
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                <p className="text-green-400 text-sm">Request sent successfully! Redirecting to dashboard...</p>
               </div>
             </div>
-          )}
+            <h1 className="text-4xl font-bold gradient-text mb-2">Request Money</h1>
+            <p className="text-slate-400 text-lg">
+              Ask your friends to send you money
+            </p>
+          </div>
 
-          <div className="space-y-6">
-            {/* Recipient Info */}
-            <div className="bg-slate-800/50 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-slate-400 mb-2">Request from</h3>
-              <SendDisplayUser />
+          {/* Info banner */}
+          <div className="glass rounded-xl p-4 border border-slate-700/50 text-slate-300">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm">Find a friend below and send them a payment request. They’ll be notified immediately.</p>
+              </div>
             </div>
-
-            {/* Amount Input */}
-            <Inputbox
-              onChange={(e) => setAmount(e.target.value)}
-              lable="Amount (₹)"
-              val="Enter amount to request"
-              type="number"
-              error={error && !amount ? "Amount is required" : ""}
-            />
-
-            <Button
-              onClick={requestMoneyFun}
-              lable={
-                tracker ? (
-                  <div className="flex justify-center items-center">
-                    <div className="animate-spin inline-block w-5 h-5 mr-3 border-2 border-current border-t-transparent text-white rounded-full" />
-                    <span>Sending request...</span>
-                  </div>
-                ) : (
-                  "Send Request"
-                )
-              }
-              disabled={tracker || success}
-            />
           </div>
 
-          {/* Back to Dashboard */}
-          <div className="mt-8 text-center">
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="text-slate-400 hover:text-slate-300 font-medium transition-colors duration-200"
-            >
-              ← Back to Dashboard
-            </button>
-          </div>
-        </div>
 
-        {/* Info Notice */}
-        <div className="text-center">
-          <div className="flex items-center justify-center text-slate-500 text-xs">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            The recipient will be notified of your request
+          {/* User search */}
+          <div className="mt-6">
+            <UserSearch />
+          </div>
+
+          {/* Info Notice */}
+          <div className="text-center">
+            <div className="flex items-center justify-center text-slate-500 text-xs">
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              The recipient will be notified of your request
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };

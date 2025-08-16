@@ -1,7 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWallet } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 export const Balance = ({ Userbalance }) => {
+  const navigate = useNavigate();
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="card p-8">
@@ -20,8 +22,8 @@ export const Balance = ({ Userbalance }) => {
           {/* Wallet Icon */}
           <div className="flex items-center justify-center">
             <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl animate-float">
-              <FontAwesomeIcon 
-                icon={faWallet} 
+              <FontAwesomeIcon
+                icon={faWallet}
                 className="text-white text-3xl"
               />
             </div>
@@ -31,7 +33,7 @@ export const Balance = ({ Userbalance }) => {
         {/* Quick Actions */}
         <div className="mt-8 pt-6 border-t border-slate-700/50">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-700/50 transition-colors duration-200">
+            <button onClick={() => navigate('/send')} className="text-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-700/50 transition-colors duration-200">
               <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -39,9 +41,9 @@ export const Balance = ({ Userbalance }) => {
               </div>
               <h3 className="text-sm font-semibold text-white mb-1">Send Money</h3>
               <p className="text-xs text-slate-400">Transfer to friends</p>
-            </div>
-            
-            <div className="text-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-700/50 transition-colors duration-200">
+            </button>
+
+            <button onClick={() => navigate('/request')} className="text-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-700/50 transition-colors duration-200">
               <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -49,8 +51,8 @@ export const Balance = ({ Userbalance }) => {
               </div>
               <h3 className="text-sm font-semibold text-white mb-1">Request Money</h3>
               <p className="text-xs text-slate-400">Ask for payment</p>
-            </div>
-            
+            </button>
+
             <div className="text-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-700/50 transition-colors duration-200">
               <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

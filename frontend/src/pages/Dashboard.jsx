@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Appbar } from "../components/Appbar";
 import { Balance } from "../components/Balance";
-import { UserSearch } from "../components/UserSearch";
 import axios from "axios";
 import { Loader } from "../components/Loader";
+import { Layout } from "../components/Layout";
 
 export const Dashboard = () => {
   const [firstName, setFirstName] = useState("");
@@ -89,13 +88,16 @@ export const Dashboard = () => {
     );
   }
 
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/signin";
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <Appbar nameFirstLetter={firstName[0]} />
+    <Layout userInitial={firstName?.[0]} onLogout={handleLogout}>
       <div className="pb-8">
         <Balance Userbalance={balance} />
-        <UserSearch />
       </div>
-    </div>
+    </Layout>
   );
 };

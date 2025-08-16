@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 export const Appbar = ({ nameFirstLetter }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
@@ -81,6 +82,14 @@ export const Appbar = ({ nameFirstLetter }) => {
     };
   }, []);
 
+  const isActive = (path) => location.pathname === path;
+  const navBtnClass = (path) => {
+    const base = "px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200";
+    return isActive(path)
+      ? `text-white bg-slate-700/50 ${base}`
+      : `text-slate-300 hover:text-white hover:bg-slate-700/30 ${base}`;
+  };
+
   return (
     <div className="sticky top-0 z-50 glass border-b border-slate-700/50 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -99,6 +108,15 @@ export const Appbar = ({ nameFirstLetter }) => {
                 </svg>
               </div>
             </h1>
+          </div>
+
+          {/* Center navigation */}
+          <div className="flex-1 flex items-center justify-center">
+            <nav className="flex items-center space-x-1">
+              <button onClick={() => navigate("/dashboard")} className={navBtnClass("/dashboard")}>Dashboard</button>
+              <button onClick={() => navigate("/send")} className={navBtnClass("/send")}>Send</button>
+              <button onClick={() => navigate("/request")} className={navBtnClass("/request")}>Request</button>
+            </nav>
           </div>
 
           {/* Right side */}
