@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
+import { AuthLayout } from "../components/AuthLayout";
 
 const apiUrl = import.meta.env.VITE_API_URL || "localhost:4000";
 
@@ -19,7 +20,7 @@ export const Signin = () => {
   async function signInFun() {
     // Reset errors
     setErrors({});
-    
+
     // Validation
     if (!username.trim()) {
       setErrors(prev => ({ ...prev, username: "Email is required" }));
@@ -50,24 +51,13 @@ export const Signin = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
+    <AuthLayout quote="Fast, secure, and effortless payments—anytime, anywhere." author="PayPlus">
+      <div className="space-y-8">
         <div className="text-center">
-          <div className="flex items-center justify-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
-              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-            </div>
-          </div>
           <h1 className="text-4xl font-bold gradient-text mb-2">Welcome Back</h1>
-          <p className="text-slate-400 text-lg">
-            Sign in to your PayPlus account
-          </p>
+          <p className="text-slate-400 text-lg">Sign in to your PayPlus account</p>
         </div>
 
-        {/* Sign In Form */}
         <div className="card p-8">
           {errors.general && (
             <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
@@ -82,7 +72,7 @@ export const Signin = () => {
               val="Enter your email"
               error={errors.username}
             />
-            
+
             <Inputbox
               onChange={(e) => setpassword(e.target.value)}
               lable="Password"
@@ -157,13 +147,10 @@ export const Signin = () => {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="text-center">
-          <p className="text-slate-500 text-xs">
-            By signing in, you agree to our Terms of Service and Privacy Policy
-          </p>
+          <p className="text-slate-500 text-xs">By signing in, you agree to our Terms of Service and Privacy Policy</p>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
