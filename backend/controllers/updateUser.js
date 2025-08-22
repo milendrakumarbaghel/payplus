@@ -1,5 +1,6 @@
 const { prisma } = require('../prismaClient');
 const zod = require('zod');
+const bcrypt = require('bcrypt');
 
 const updateBody = zod.object({
   password: zod.string().optional(),
@@ -29,14 +30,19 @@ exports.updateUser = async (req, res) => {
     if (!userCheck) {
       return res.status(403).json({ msg: "Invalid credential" });
     }
-    if (userCheck.password !== data.password) {
-      console.log(
-        "userCheck.password--",
-        userCheck.password,
-        "data.password---",
-        data.password
-      );
-      return res.status(403).json({ msg: "Password is wrong" });
+    if (data.password) {
+      let ok = false;
+      try {
+        ok = await bcrypt.compare(data.password, userCheck.password);
+      } catch (_) {
+        ok = false;
+      }
+      if (!ok) {
+        // legacy fallback
+        if (userCheck.password !== data.password) {
+          return res.status(403).json({ msg: "Password is wrong" });
+        }
+      }
     }
 
     await prisma.user.update({ where: { id: req.userId }, data: payLoad });
