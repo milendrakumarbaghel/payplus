@@ -8,7 +8,7 @@ import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { AuthLayout } from "../components/AuthLayout";
 
-const apiUrl = import.meta.env.VITE_API_URL || "localhost:4000";
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export const Signin = () => {
   const [username, setUsername] = useState("");
